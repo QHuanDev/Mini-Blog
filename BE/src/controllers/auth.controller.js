@@ -1,31 +1,44 @@
 import authService from "../services/auth.service.js";
+import handleAsync from "../middleware/handleAsync.js";
+import { registerValidate } from "../validations/auth.validate.js";
+import { utils } from "../utils/index.js";
 
-export const register = async (req, res) => {
-  try {
-    const { email, password, username } = req.body;
+export const register = handleAsync(async (req, res, next) => {
+  await registerValidate.validate(req.body, { abortEarly: false });
 
-    if (!email || !password || !username) {
-      return res.status(400).json({
-        success: false,
-        message: "Vui lòng cung cấp đầy đủ thông tin (email, password, username)",
-      });
-    }
+  const { email, password, username } = req.body;
+  const result = await authService.register({ email, password, username });
+  return utils.success(res, "Đăng ký thành công", result);
+});
 
-    const result = await authService.register({ email, password, username });
+// export const register = async (req, res) => {
+//   try {
+//     const { email, password, username } = req.body;
 
-    res.status(201).json({
-      success: true,
-      message: "Đăng ký thành công! Vui lòng kiểm tra email để xác thực tài khoản.",
-      data: result.user,
-    });
-  } catch (error) {
-    console.error("Register error:", error);
-    res.status(400).json({
-      success: false,
-      message: error.message || "Đã có lỗi xảy ra khi đăng ký",
-    });
-  }
-};
+//     if (!email || !password || !username) {
+//       return res.status(400).json({
+//         success: false,
+//         message:
+//           "Vui lòng cung cấp đầy đủ thông tin (email, password, username)",
+//       });
+//     }
+
+//     const result = await authService.register({ email, password, username });
+
+//     res.status(201).json({
+//       success: true,
+//       message:
+//         "Đăng ký thành công! Vui lòng kiểm tra email để xác thực tài khoản.",
+//       data: result.user,
+//     });
+//   } catch (error) {
+//     console.error("Register error:", error);
+//     res.status(400).json({
+//       success: false,
+//       message: error.message || "Đã có lỗi xảy ra khi đăng ký",
+//     });
+//   }
+// };
 
 export const verifyEmail = async (req, res) => {
   try {
@@ -76,7 +89,6 @@ export const verifyEmail = async (req, res) => {
     </body>
     </html>
     `);
-
   } catch (error) {
     console.error("Verify email error:", error);
     res.status(400).json({
@@ -106,9 +118,9 @@ export const login = async (req, res) => {
     });
   } catch (error) {
     console.error("Login error:", error);
-    
+
     const status = error.needVerification ? 403 : 401;
-    
+
     res.status(status).json({
       success: false,
       message: error.message || "Đã có lỗi xảy ra khi đăng nhập",

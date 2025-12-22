@@ -1,5 +1,5 @@
-import nodemailer from "nodemailer";
 import dotenv from "dotenv";
+import nodemailer from "nodemailer";
 
 dotenv.config();
 
@@ -19,7 +19,7 @@ export const sendVerificationEmail = async (email, token, name) => {
   const verificationUrl = `http://localhost:5000/api/auth/verify-email?token=${token}`;
 
   const mailOptions = {
-    from: `"${process.env.APP_NAME || 'Blog'}" <${process.env.EMAIL_USER}>`,
+    from: `"${process.env.APP_NAME || "Blog"}" <${process.env.EMAIL_USER}>`,
     to: email,
     subject: "Xác thực tài khoản của bạn tại Blog",
     html: `
@@ -38,7 +38,7 @@ export const sendVerificationEmail = async (email, token, name) => {
       <body>
         <div class="container">
           <div class="header">
-            <h1>Chào mừng đến với ${process.env.APP_NAME || 'Blog'}!</h1>
+            <h1>Chào mừng đến với ${process.env.APP_NAME || "Blog"}!</h1>
           </div>
           <div class="content">
             <h2>Xin chào ${name},</h2>
@@ -50,7 +50,9 @@ export const sendVerificationEmail = async (email, token, name) => {
             <p>Nếu bạn không đăng ký tài khoản này, vui lòng bỏ qua email này.</p>
           </div>
           <div class="footer">
-            <p>&copy; 2024 ${process.env.APP_NAME || 'Blog'}. All rights reserved.</p>
+            <p>&copy; 2024 ${
+              process.env.APP_NAME || "Blog"
+            }. All rights reserved.</p>
           </div>
         </div>
       </body>
@@ -63,7 +65,7 @@ export const sendVerificationEmail = async (email, token, name) => {
 
 export const sendOTPEmail = async (email, otp, name) => {
   const mailOptions = {
-    from: `"${process.env.APP_NAME || 'Blog'}" <${process.env.EMAIL_USER}>`,
+    from: `"${process.env.APP_NAME || "Blog"}" <${process.env.EMAIL_USER}>`,
     to: email,
     subject: "Mã OTP đăng nhập Blog",
     html: `
@@ -93,7 +95,9 @@ export const sendOTPEmail = async (email, otp, name) => {
             <p>Nếu bạn không yêu cầu đăng nhập, vui lòng bỏ qua email này và bảo mật tài khoản của bạn.</p>
           </div>
           <div class="footer">
-            <p>&copy; 2024 ${process.env.APP_NAME || 'Blog'}. All rights reserved.</p>
+            <p>&copy; 2024 ${
+              process.env.APP_NAME || "Blog"
+            }. All rights reserved.</p>
           </div>
         </div>
       </body>
