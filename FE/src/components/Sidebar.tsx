@@ -3,9 +3,9 @@ import {
   House,
   BookMarked,
   History,
-  LogOut,
   PanelRightOpen,
 } from "lucide-react";
+import { Link } from "react-router-dom";
 
 interface SidebarProps {
   isExpanded: boolean;
@@ -49,47 +49,33 @@ const Sidebar: React.FC<SidebarProps> = ({ isExpanded, toggleSidebar }) => {
 
         <nav className="flex-1 py-6 space-y-2 overflow-visible">
           {menuIcons.map((item, index) => (
-            <a
+            <Link
               key={index}
               className="relative flex items-center group transition-all duration-300 ease-out
               gap-4 px-4 py-3 rounded-2xl mx-1
               text-neutral-400 hover:bg-neutral-800/50 hover:text-neutral-200"
-              href={item.href}
+              to={item.href}
             >
               <div className="relative transition-transform duration-300 group-hover:scale-110">
                 {item.icon}
               </div>
               <span
-                className={`
-    text-base tracking-wide font-medium whitespace-nowrap
-    transition-all duration-300 ease-in-out
-    overflow-hidden
-    ${isExpanded ? "opacity-100 max-w-50" : "opacity-0 max-w-0"}
-  `}
+                className={`text-base tracking-wide font-medium whitespace-nowrap transition-all duration-300 ease-in-out overflow-hidden
+                  ${isExpanded ? "opacity-100 max-w-50" : "opacity-0 max-w-0"}`}
               >
                 {item.label}
               </span>
               {!isExpanded && (
-                <div className="absolute left-full ml-2 px-3 py-1.5 bg-slate-800/45 text-white text-sm rounded-3xl opacity-0 group-hover:opacity-100  transition-opacity whitespace-nowrap ">
+                <div className="absolute left-full ml-2 px-3 py-1.5 bg-slate-800/45 text-white text-sm rounded-3xl opacity-0 group-hover:opacity-100  transition-opacity whitespace-nowrap pointer-events-none">
                   {item.label}
                 </div>
               )}
-            </a>
+            </Link>
           ))}
         </nav>
 
-        <div className="p-4 border-t border-slate-800/50">
-          <button
-            className={`w-full flex items-center text-slate-400 hover:text-red-400 hover:bg-slate-800/30 rounded-lg transition-all p-2 ${
-              !isExpanded ? "justify-center" : ""
-            }`}
-          >
-            <LogOut size={20} strokeWidth={1.5} />
-            {isExpanded && (
-              <span className="ml-4 text-sm font-medium">Đăng xuất</span>
-            )}
-          </button>
-        </div>
+        
+        
       </div>
     </aside>
   );

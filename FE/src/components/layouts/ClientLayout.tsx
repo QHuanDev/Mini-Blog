@@ -1,10 +1,10 @@
 import { useState } from "react";
-import Header from "./Header";
+import Header from "../Header";
 import { Outlet } from "react-router-dom";
-import Background from "./Background";
-import Sidebar from "./Sidebar";
+import Background from "../Background";
+import Sidebar from "../Sidebar";
 
-const Layout = () => {
+const ClientLayout = () => {
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(true);
 
   const toggleSidebar = () => {
@@ -34,4 +34,4 @@ const Layout = () => {
   );
 };
 
-export default Layout;
+export default ClientLayout;
