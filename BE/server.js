@@ -4,7 +4,6 @@ import dotenv from "dotenv";
 import { connectDB } from "./src/config/database.js";
 import router from "./src/routes/index.js";
 import configMiddleware from "./src/config/index.js";
-import { errorHandler } from "./src/middleware/errorHandler.js";
 
 dotenv.config();
 
@@ -46,8 +45,6 @@ app.use((req, res) => {
     message: "Route not found",
   });
 });
-
-app.use(errorHandler);
 
 const startServer = async () => {
   try {

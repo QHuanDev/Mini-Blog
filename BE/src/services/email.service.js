@@ -16,7 +16,7 @@ console.log(process.env.EMAIL_USER, process.env.EMAIL_PASSWORD);
 
 export const sendVerificationEmail = async (email, token, name) => {
   // const verificationUrl = `${process.env.FRONTEND_URL}/verify-email?token=${token}`;
-  const verificationUrl = `http://localhost:5000/api/auth/verify-email?token=${token}`;
+  const verificationUrl = `http://localhost:${process.env.PORT}/api/auth/verify-email?token=${token}`;
 
   const mailOptions = {
     from: `"${process.env.APP_NAME || "Blog"}" <${process.env.EMAIL_USER}>`,

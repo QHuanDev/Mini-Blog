@@ -1,6 +1,12 @@
 class ServiceError extends Error {
-  constructor(message, code, status = 400, details = null) {
+  constructor(
+    message,
+    code = ErrorCodes.SERVER_ERROR,
+    status = 400,
+    details = null
+  ) {
     super(message);
+    this.name = "ServiceError";
     this.code = code;
     this.status = status;
     this.details = details;

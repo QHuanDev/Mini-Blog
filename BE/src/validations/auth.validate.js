@@ -19,3 +19,19 @@ export const loginValidate = yup.object({
     .min(6, "Mật khẩu phải có ít nhất 6 ký tự")
     .required("Mật khẩu bắt buộc"),
 });
+
+export const verifyOTPValidate = yup.object({
+  email: yup.string().email("Email không hợp lệ").required("Email bắt buộc"),
+  otp: yup
+    .string()
+    .length(6, "Mã OTP phải có 6 ký tự")
+    .required("Mã OTP bắt buộc"),
+});
+
+export const emailOnlyValidate = yup.object({
+  email: yup.string().email("Email không hợp lệ").required("Email bắt buộc"),
+});
+
+export const verifyTokenValidate = yup.object({
+  token: yup.string().required("Token xác thực bắt buộc"),
+});

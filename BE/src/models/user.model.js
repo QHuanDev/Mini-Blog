@@ -1,4 +1,4 @@
-import { DataTypes } from "sequelize";
+import { DataTypes, Op } from "sequelize";
 import sequelize from "../config/database.js";
 import bcrypt from "bcryptjs";
 
@@ -102,6 +102,82 @@ User.prototype.toJSON = function () {
   delete values.otp;
   delete values.verification_token;
   return values;
+};
+
+User.findByEmail = async function (email) {
+  return await this.findOne({ where: { email } });
+};
+
+User.findByUsername = async function (username) {
+  return await this.findOne({ where: { username } });
+};
+
+User.findByEmailOrUsername = async function (email, username) {
+  return await this.findOne({
+    where: {
+      [Op.or]: [{ email }, { username }],
+    },
+  });
+};
+
+User.findByVerificationToken = async function (token) {
+  return await this.findOne({
+    where: { verification_token: token },
+  });
+};
+
+User.findByValidOTP = async function (email, otp) {
+  return await this.findOne({
+    where: {
+      email,
+      otp,
+      otp_expires: { [Op.gt]: new Date() },
+    },
+  });
+};
+
+User.findByEmailAndOTP = async function (email, otp) {
+  return await this.findOne({
+    where: { email, otp },
+  });
+};
+
+User.createWithVerification = async function (
+  userData,
+  verificationToken,
+  verificationTokenExpires
+) {
+  return await this.create({
+    ...userData,
+    verification_token: verificationToken,
+    verification_token_expires: verificationTokenExpires,
+  });
+};
+
+User.prototype.verifyEmail = async function () {
+  this.email_verified = true;
+  this.verification_token = null;
+  this.verification_token_expires = null;
+  return await this.save();
+};
+
+User.prototype.updateVerificationToken = async function (token, expires) {
+  this.verification_token = token;
+  this.verification_token_expires = expires;
+  return await this.save();
+};
+
+User.prototype.setOTP = async function (otp, expires) {
+  this.otp = otp;
+  this.otp_expires = expires;
+  return await this.save();
+};
+
+User.prototype.clearOTPAndLogin = async function () {
+  this.otp = null;
+  this.otp_expires = null;
+  this.last_login = new Date();
+  return await this.save();
 };
 
 export default User;
