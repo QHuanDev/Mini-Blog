@@ -6,6 +6,7 @@ import {
   verifyOTPValidate,
   emailOnlyValidate,
   verifyTokenValidate,
+  refreshTokenValidate,
 } from "../validations/auth.validate.js";
 import MESSAGE from "../constants/message.js";
 import { Response } from "../utils/createResponse.js";
@@ -93,4 +94,29 @@ export const getMe = handleAsync(async (req, res) => {
   return Response(res, MESSAGE.AUTH.GET_ME_SUCCESS, {
     user: req.user,
   });
+});
+
+/**
+ * POST /api/auth/refresh-token
+ */
+export const refreshToken = handleAsync(async (req, res) => {
+  await refreshTokenValidate.validate(req.body, { abortEarly: false });
+
+  const { refreshToken } = req.body;
+
+  const result = await authService.refreshToken(refreshToken);
+
+  return Response(res, MESSAGE.AUTH.REFRESH_TOKEN_SUCCESS, result);
+});
+
+/**
+ * POST /api/auth/logout
+ */
+export const logout = handleAsync(async (req, res) => {
+  await refreshTokenValidate.validate(req.body, { abortEarly: false });
+
+  const { refreshToken } = req.body;
+  await authService.logout(refreshToken);
+
+  return Response(res, MESSAGE.AUTH.LOGOUT_SUCCESS);
 });

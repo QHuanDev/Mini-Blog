@@ -6,6 +6,8 @@ const MESSAGE = {
     RESEND_OTP_SUCCESS: "Mã OTP mới đã được gửi",
     GET_ME_SUCCESS: "Lấy thông tin người dùng thành công",
     VERIFY_OTP_SUCCESS: "Xác thực OTP thành công",
+    REFRESH_TOKEN_SUCCESS: "Làm mới token thành công",
+    LOGOUT_SUCCESS: "Đăng xuất thành công",
     REGISTER_FAILED: "Đăng ký thất bại",
     LOGIN_FAILED: "Email hoặc mật khẩu không đúng",
     UNAUTHORIZED: "Bạn chưa đăng nhập",

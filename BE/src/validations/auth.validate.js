@@ -35,3 +35,7 @@ export const emailOnlyValidate = yup.object({
 export const verifyTokenValidate = yup.object({
   token: yup.string().required("Token xác thực bắt buộc"),
 });
+
+export const refreshTokenValidate = yup.object({
+  refreshToken: yup.string().required("Refresh token bắt buộc"),
+});

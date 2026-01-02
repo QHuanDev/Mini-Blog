@@ -1,8 +1,8 @@
 import ErrorCodes from "../constants/error-code.js";
 import MESSAGE from "../constants/message.js";
 
-const handleAsync = (fn) => (req, res, next) => {
-  Promise.resolve(fn(req, res, next)).catch((err) => {
+const handleAsync = (fn) => (req, res) => {
+  Promise.resolve(fn(req, res)).catch((err) => {
     // Yup ValidationError
     if (err.name === "ValidationError") {
       const fieldErrors = formatYupErrors(err);

@@ -1,24 +1,36 @@
 import User from "../models/user.model.js";
-import jwt from "jsonwebtoken";
+import Session from "../models/session.model.js";
 import crypto from "crypto";
 import { sendVerificationEmail, sendOTPEmail } from "./email.service.js";
 import ServiceError from "../utils/createErrors.js";
 import MESSAGE from "../constants/message.js";
 import ErrorCodes from "../constants/error-code.js";
+import {
+  generateTokens,
+  verifyRefreshToken,
+  getRefreshTokenExpiry,
+} from "../utils/jwt.utils.js";
 
 class AuthService {
-  generateToken(userId) {
-    return jwt.sign({ id: userId }, process.env.JWT_SECRET, {
-      expiresIn: process.env.JWT_EXPIRES_IN || "7d",
-    });
-  }
-
   generateOTP() {
     return Math.floor(100000 + Math.random() * 900000).toString();
   }
 
   generateVerificationToken() {
     return crypto.randomBytes(32).toString("hex");
+  }
+
+  /**
+   * Tạo session mới trong database
+   */
+  async createSession(userId, refreshToken, metadata = {}) {
+    const expiresAt = getRefreshTokenExpiry();
+    return await Session.createSession(
+      userId,
+      refreshToken,
+      expiresAt,
+      metadata
+    );
   }
 
   async register(userData) {
@@ -89,7 +101,8 @@ class AuthService {
 
     await user.verifyEmail();
 
-    const authToken = this.generateToken(user.id);
+    const tokens = generateTokens(user.id);
+    await this.createSession(user.id, tokens.refreshToken);
 
     return {
       user: {
@@ -97,7 +110,7 @@ class AuthService {
         username: user.username,
         email: user.email,
       },
-      token: authToken,
+      ...tokens,
     };
   }
 
@@ -179,11 +192,14 @@ class AuthService {
       }
       throw new ServiceError(
         "Mã OTP không hợp lệ hoặc người dùng không tồn tại",
-        false
+        ErrorCodes.OTP_INVALID,
+        401,
+        "Mã OTP không hợp lệ"
       );
     }
     await user.clearOTPAndLogin();
-    const token = this.generateToken(user.id);
+    const tokens = generateTokens(user.id);
+    await this.createSession(user.id, tokens.refreshToken);
 
     return {
       user: {
@@ -191,7 +207,7 @@ class AuthService {
         username: user.username,
         email: user.email,
       },
-      token,
+      ...tokens,
     };
   }
 
@@ -281,6 +297,77 @@ class AuthService {
       is_active: user.is_active,
       email_verified: user.email_verified,
     };
+  }
+
+  async refreshToken(refreshTokenValue) {
+    try {
+      const decoded = verifyRefreshToken(refreshTokenValue);
+
+      const session = await Session.findByRefreshToken(refreshTokenValue);
+
+      if (!session) {
+        throw new ServiceError(
+          "Session không tồn tại hoặc đã hết hạn",
+          ErrorCodes.TOKEN_INVALID,
+          401,
+          "Refresh token không hợp lệ"
+        );
+      }
+
+      const user = await User.findByPk(decoded.id);
+
+      if (!user) {
+        throw new ServiceError(
+          MESSAGE.AUTH.USER_NOT_FOUND,
+          ErrorCodes.USER_NOT_FOUND,
+          404,
+          "Người dùng không tồn tại"
+        );
+      }
+
+      if (!user.is_active) {
+        throw new ServiceError(
+          MESSAGE.AUTH.ACCOUNT_DISABLED,
+          ErrorCodes.ACCOUNT_DISABLED,
+          403,
+          "Tài khoản đã bị vô hiệu hóa"
+        );
+      }
+
+      // Revoke old session
+      await session.revoke();
+
+      // Generate new tokens
+      const tokens = generateTokens(user.id);
+      await this.createSession(user.id, tokens.refreshToken);
+
+      return {
+        user: {
+          id: user.id,
+          username: user.username,
+          email: user.email,
+        },
+        ...tokens,
+      };
+    } catch (error) {
+      if (
+        error.name === "JsonWebTokenError" ||
+        error.name === "TokenExpiredError"
+      ) {
+        throw new ServiceError(
+          "Refresh token không hợp lệ hoặc đã hết hạn",
+          ErrorCodes.TOKEN_INVALID,
+          401,
+          "Refresh token không hợp lệ"
+        );
+      }
+      throw error;
+    }
+  }
+
+  async logout(refreshToken) {
+    await Session.revokeToken(refreshToken);
+    return true;
   }
 }
 

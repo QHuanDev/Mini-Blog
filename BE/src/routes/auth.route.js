@@ -7,6 +7,8 @@ import {
   resendVerification,
   resendOTP,
   getMe,
+  refreshToken,
+  logout,
 } from "../controllers/auth.controller.js";
 import { authenticate } from "../middleware/auth.middleware.js";
 
@@ -23,6 +25,10 @@ AuthRouter.post("/login", login);
 AuthRouter.post("/verify-otp", verifyOTP);
 
 AuthRouter.post("/resend-otp", resendOTP);
+
+AuthRouter.post("/refresh-token", refreshToken);
+
+AuthRouter.post("/logout", logout);
 
 AuthRouter.get("/me", authenticate, getMe);
 
