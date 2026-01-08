@@ -36,6 +36,19 @@ const MESSAGE = {
     SERVER_ERROR: "Lỗi hệ thống",
     FORBIDDEN: "Bạn không có quyền truy cập",
   },
+
+  POST: {
+    CREATE_SUCCESS: "Tạo bài viết thành công",
+    GET_SUCCESS: "Lấy bài viết thành công",
+    GET_ALL_SUCCESS: "Lấy danh sách bài viết thành công",
+    UPDATE_SUCCESS: "Cập nhật bài viết thành công",
+    DELETE_SUCCESS: "Xóa bài viết thành công",
+    PUBLISH_SUCCESS: "Xuất bản bài viết thành công",
+    ARCHIVE_SUCCESS: "Lưu trữ bài viết thành công",
+    NOT_FOUND: "Bài viết không tồn tại",
+    FORBIDDEN: "Bạn không có quyền thao tác bài viết này",
+
+  },
 };
 
 export default MESSAGE;

@@ -165,6 +165,7 @@ class AuthService {
     return {
       email: user.email,
       requireOTP: true,
+      otp
     };
   }
 
