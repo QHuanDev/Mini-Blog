@@ -1,5 +1,6 @@
-import { DataTypes } from "sequelize";
+import { DataTypes, Op } from "sequelize";
 import sequelize from "../config/database.js";
+import { buildQueryOptions } from "../utils/buildQueryOptions.js";
 
 const Post = sequelize.define(
   "Post",
@@ -79,10 +80,35 @@ const Post = sequelize.define(
   }
 );
 
-Post.findAllPost = async () => {
+Post.findAllPost = async (options) => {
+  const queryOptions = buildQueryOptions(options);
+
+if (options.filter?.title) {
+  queryOptions.where = {
+    [Op.or]: [
+      { title: { [Op.iLike]: `%${options.filter.title}%` } },
+    ]
+  };
+}
+if (options.filter?.category_id) {
+  queryOptions.where = {
+    [Op.or]: [
+      { category_id: { [Op.iLike]: `%${options.filter.category_id}%` } },
+    ]
+  };
+}
+if (options.filter?.author_id) {
+  queryOptions.where = {
+    [Op.or]: [
+      { author_id: { [Op.iLike]: `%${options.filter.author_id}%` } }
+    ]
+  };
+}
+
+
   return await Post.findAll({
-    order: [["created_at", "DESC"]],
     where: { status: "published" },
+    ...queryOptions,
   });
 };
 Post.findOneBySlug = async (slug) => {

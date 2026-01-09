@@ -5,8 +5,8 @@ import ServiceError from "../utils/createErrors.js";
 import { gennerateSlug } from "../utils/slug.js";
 
 export const PostService = {
-  getAll: async () => {
-    const posts = await Post.findAllPost();
+  getAll: async (options) => {
+    const posts = await Post.findAllPost(options);
     return posts;
   },
 

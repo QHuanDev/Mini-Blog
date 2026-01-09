@@ -6,9 +6,22 @@ import {
   createPostValidate,
   updatePostValidate,
 } from "../validations/post.validate.js";
+import { paginationValidate } from "../validations/query.validate.js";
 
 export const getAllPosts = handleAsync(async (req, res) => {
-  const posts = await PostService.getAll();
+  const fields = await paginationValidate.validate(req.query, {
+    abortEarly: false,
+  });
+  const { title, category, author } = req.query;
+  const options = {
+    ...fields,
+    filter: {
+      title,
+      category,
+      author,
+    },
+  };
+  const posts = await PostService.getAll(options);
   return Response(res, MESSAGE.POST.GET_ALL_SUCCESS, posts);
 });
 
